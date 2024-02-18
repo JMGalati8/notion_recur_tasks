@@ -14,7 +14,8 @@ When filtering - Use 'rich_text' for text. No I don't know why the notion_client
 notion.pages.create will create new pages (rows in db). The properties seems weird as you can't pass in the properties of the DB as far I found  
 You just give it what properties you want to fill out, and then also say what you want to use in those properties.
 
-
+### Random Notes
+1. API will give IDs with hyphen (-) in it but will freak if you return them like this. So remove hyphens before using an ID.
 
 def create_page():
     create_response = notion.pages.create(

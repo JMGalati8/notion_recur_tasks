@@ -35,5 +35,36 @@ def update_db(db_id, notion_client):
                 }
             )
 
+
+def get_page_info(notion_client, search_id):
+    response = notion_client.blocks.children.list(block_id=search_id)
+
+    for res in response['results']:
+        child_db = res.get('child_database')
+        child_page = res.get('child_page')
+
+        if child_db:
+            print(f"Title: {child_db['title']} | Type: Database | ID: {res['id'].replace('-','')}")
+
+        if child_page:
+            print(f"Title: {child_page['title']} | Type: Page | ID: {res['id'].replace('-','')}")
+
+
+
+def return_db_rows(notion_client, search_id):
+    response = notion_client.databases.query(
+        **{
+            'database_id':search_id,
+            'filter': {'property': 'Type', 'formula': {'string': {'contains': 'Recurring'}}}
+        }
+    )    
+
+    db_rows = response['results']
+
+    for row in db_rows:
+        print(f"Task Name: {row['properties']['Task']['title'][0]['text']['content']} | Task ID: {row['id']}")
+
+    
+
 # Split this into query_db & update_db
 # Make a function to return all objects on the main page - So DBs and Pages, include their name, id and type
