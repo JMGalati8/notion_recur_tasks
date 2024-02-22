@@ -4,7 +4,34 @@ from notion_client import Client
 from datetime import datetime, timedelta, date
 
 
-def update_db(db_id, notion_client):
+def update_page_test(notion_client, db_row_ids):
+
+    for id in db_row_ids:
+        db_row = notion_client.pages.retrieve(page_id=id)
+        due_date = datetime.fromisoformat(db_row['properties']['Due']['date']['start']).date()
+        recur_interval = db_row['properties']['Recur Interval']['number']
+
+        if date.today() > due_date:
+            new_due_date = (due_date + timedelta(days=recur_interval)).isoformat()
+
+            notion_client.pages.update(
+                **{
+                    'page_id':id,
+                    'properties': {
+                        'Due': {
+                            'date': {'start': new_due_date}
+                        },
+                        'Done': {
+                            'checkbox': False
+                        }
+                    }
+                }
+            )
+
+        #print(db_row['properties']['Recur Interval']['number'].keys())
+
+
+def update_db(notion_client, db_row_ids):
     db_rows = notion_client.databases.query(
         **{
             'database_id':db_id,
@@ -51,7 +78,7 @@ def get_page_info(notion_client, search_id):
 
 
 
-def return_db_rows(notion_client, search_id):
+def return_db_rows(notion_client, search_id, print_info=True):
     response = notion_client.databases.query(
         **{
             'database_id':search_id,
@@ -61,8 +88,16 @@ def return_db_rows(notion_client, search_id):
 
     db_rows = response['results']
 
+    db_row_list = []
     for row in db_rows:
-        print(f"Task Name: {row['properties']['Task']['title'][0]['text']['content']} | Task ID: {row['id']}")
+        clean_row_id = row['id'].replace('-','')
+        db_row_list.append(clean_row_id)
+
+        if print_info:
+            print(f"Task Name: {row['properties']['Task']['title'][0]['text']['content']} | Task ID: {clean_row_id}")
+
+    return db_row_list
+
 
     
 

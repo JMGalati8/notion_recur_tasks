@@ -15,5 +15,8 @@ if __name__ == "__main__":
     #utils.update_db(db_id=os.environ['NOTION_TEST_DB_ID'], notion_client=notion_client)
     #utils.get_page_info(notion_client=notion_client, search_id=os.environ['NOTION_TEST_TASK_ID'])
     
-    utils.return_db_rows(notion_client=notion_client, search_id=os.environ['NOTION_TEST_ALL_TASK_DB_ID'])
+    db_list = utils.return_db_rows(notion_client=notion_client, search_id=os.environ['NOTION_TEST_ALL_TASK_DB_ID'],print_info=True)
+    print(db_list)
+
+    utils.update_page_test(notion_client=notion_client, db_row_ids=db_list)
 
