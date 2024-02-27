@@ -4,7 +4,7 @@ from notion_client import Client
 from datetime import datetime, timedelta, date
 
 
-def update_page_test(notion_client, db_row_ids):
+def update_db_rows(notion_client, db_row_ids):
 
     for id in db_row_ids:
         db_row = notion_client.pages.retrieve(page_id=id)
@@ -78,7 +78,7 @@ def get_page_info(notion_client, search_id):
 
 
 
-def return_db_rows(notion_client, search_id, print_info=True):
+def return_db_rows(notion_client, search_id, print_info=False):
     response = notion_client.databases.query(
         **{
             'database_id':search_id,
@@ -86,10 +86,8 @@ def return_db_rows(notion_client, search_id, print_info=True):
         }
     )    
 
-    db_rows = response['results']
-
     db_row_list = []
-    for row in db_rows:
+    for row in response['results']:
         clean_row_id = row['id'].replace('-','')
         db_row_list.append(clean_row_id)
 
